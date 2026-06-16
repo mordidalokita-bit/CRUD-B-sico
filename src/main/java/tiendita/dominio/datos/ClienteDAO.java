@@ -154,6 +154,33 @@ public class ClienteDAO implements IClienteDAO {
 
     @Override
     public boolean eliminarCliente(Cliente cliente) {
+
+        PreparedStatement ps;
+        Connection con = getConexion();
+        // ResultSet rs; solo sirve cuando recuperamos informacion
+
+        String sql = "DELETE FROM cliente WHERE id =?"; // 4° Parametro
+
+        try {
+            ps = con.prepareStatement(sql);
+
+            ps.setInt(1, cliente.getId());
+
+            ps.execute(); // Ejecuta la sentencia
+
+            return  true; // Quiere decir que si encontramos el registro
+
+        }catch (Exception e) {
+            System.out.println("Error al agregar cliente " +e.getMessage());
+        }
+        finally {
+            try {
+                con.close();
+            }catch (Exception e){
+                System.out.println("Error al cerrar la conexión: " + e.getMessage());
+            }
+        }
+
         return false;
     }
 
@@ -187,10 +214,18 @@ public class ClienteDAO implements IClienteDAO {
                 System.out.println("El cliente no se agrego correctamente " + nuevoCliente );
             }*/
         // Modificar Cliente
-        var modificarCliente = new Cliente(8,"Eustaqui","Melendez",21);
+       /* var modificarCliente = new Cliente(8,"Eustaqui","Melendez",21);
         var modificado = clienteDao.modificarCliente(modificarCliente);
         if(modificado) System.out.println("Cliente Modificado" + modificarCliente);
-        else System.out.println("No se modificó Cliente" + modificarCliente);
+        else System.out.println("No se modificó Cliente" + modificarCliente); */
+
+            // Eliminar Cliente
+
+        var clienteEliminar = new Cliente(5);
+        var eliminado = clienteDao.eliminarCliente(clienteEliminar);
+        if (eliminado) System.out.println("Cliente eliminado: "+ clienteEliminar);
+                else System.out.println("No se elimino el cliente: " + clienteEliminar);
+
 
         // listando los clientes para saber si se agregó correctamente
         System.out.println("LISTA DE CLIENTES ");
