@@ -83,8 +83,36 @@ public class ClienteDAO implements IClienteDAO {
         return false;
     }
 
+
+
     @Override
     public boolean  agregarCliente(Cliente cliente) {
+        PreparedStatement ps;
+        Connection con = getConexion();
+        // ResultSet rs; solo sirve cuando recuperamos informacion
+
+        String sql = "INSERT INTO cliente(nombre, apellido, descuento) "
+                + " VALUES(?, ?, ?)"; // Parametros Posicionales (1°. 2°. 3°)
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setString(1, cliente.getNombre());
+            ps.setString(2, cliente.getApellido());
+            ps.setInt(3, cliente.getDescuento());
+            ps.execute();
+
+                return  true; // Quiere decir que si encontramos el registro
+
+        }catch (Exception e) {
+            System.out.println("Error al agregar cliente " +e.getMessage());
+        }
+        finally {
+            try {
+                con.close();
+            }catch (Exception e ){
+                System.out.println("Error al cerrar la conexión: " + e.getMessage());
+            }
+        }
+
         return false;
     }
 
@@ -108,7 +136,7 @@ public class ClienteDAO implements IClienteDAO {
         clientes.forEach(System.out::println); // Imprime toda la base de datos*/
 
         // BUSCAR POR ID
-        var cliente1 = new Cliente(6);
+       /*  var cliente1 = new Cliente(6);
         System.out.println("Cliente antes de la busqueda: " + cliente1);
        var encontrado = clienteDao.buscarClientePorId(cliente1);
         if (encontrado) {
@@ -116,7 +144,22 @@ public class ClienteDAO implements IClienteDAO {
         } else {
             System.out.println("No se encontro cliente " + cliente1.getId());
         }
+        */
+        // AGREGAR CLIENTE
+            var nuevoCliente = new Cliente("Danoi","Adonis",22); // Recordar que el descuento es Unico
+         // Ya tenemos descuentos de 25-30-35-40 , si colocamos uno igual , no se agregará a la lista.
+            var agregado = clienteDao.agregarCliente(nuevoCliente);
 
+            if (agregado){
+                System.out.println("Cliente Agregado: "+ nuevoCliente);
+            }else {
+                System.out.println("El cliente no se agrego correctamente " + nuevoCliente );
+            }
+            // listando los clientes para saber si se agregó correctamente
+
+        System.out.println("LISTA DE CLIENTES ");
+            var clientes= clienteDao.listarClientes();
+            clientes.forEach(System.out::println);
 
     }
 }
