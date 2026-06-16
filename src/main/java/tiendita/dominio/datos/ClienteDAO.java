@@ -118,6 +118,37 @@ public class ClienteDAO implements IClienteDAO {
 
     @Override
     public boolean modificarCliente(Cliente cliente) {
+
+        PreparedStatement ps;
+        Connection con = getConexion();
+        // ResultSet rs; solo sirve cuando recuperamos informacion
+
+        String sql = "UPDATE cliente SET nombre=?, apellido=?, descuento =?"// Parametros Posicionales (1°. 2°. 3°)
+                + " WHERE id = ?"; // 4° Parametro
+
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setString(1, cliente.getNombre()); // Los valores lo obtenemos del objeto creado
+            ps.setString(2, cliente.getApellido());
+            ps.setInt(3, cliente.getDescuento());
+            ps.setInt(4,cliente.getId()); // Valor del ID
+
+            ps.execute(); // Ejecuta la sentencia
+
+            return  true; // Quiere decir que si encontramos el registro
+
+        }catch (Exception e) {
+            System.out.println("Error al agregar cliente " +e.getMessage());
+        }
+        finally {
+            try {
+                con.close();
+            }catch (Exception e){
+                System.out.println("Error al cerrar la conexión: " + e.getMessage());
+            }
+        }
+
+
         return false;
     }
 
@@ -146,7 +177,7 @@ public class ClienteDAO implements IClienteDAO {
         }
         */
         // AGREGAR CLIENTE
-            var nuevoCliente = new Cliente("Danoi","Adonis",22); // Recordar que el descuento es Unico
+         /*   var nuevoCliente = new Cliente("Danoi","Adonis",22); // Recordar que el descuento es Unico
          // Ya tenemos descuentos de 25-30-35-40 , si colocamos uno igual , no se agregará a la lista.
             var agregado = clienteDao.agregarCliente(nuevoCliente);
 
@@ -154,9 +185,14 @@ public class ClienteDAO implements IClienteDAO {
                 System.out.println("Cliente Agregado: "+ nuevoCliente);
             }else {
                 System.out.println("El cliente no se agrego correctamente " + nuevoCliente );
-            }
-            // listando los clientes para saber si se agregó correctamente
+            }*/
+        // Modificar Cliente
+        var modificarCliente = new Cliente(8,"Eustaqui","Melendez",21);
+        var modificado = clienteDao.modificarCliente(modificarCliente);
+        if(modificado) System.out.println("Cliente Modificado" + modificarCliente);
+        else System.out.println("No se modificó Cliente" + modificarCliente);
 
+        // listando los clientes para saber si se agregó correctamente
         System.out.println("LISTA DE CLIENTES ");
             var clientes= clienteDao.listarClientes();
             clientes.forEach(System.out::println);
