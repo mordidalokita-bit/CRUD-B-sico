@@ -41,8 +41,6 @@ public class ClienteDAO implements IClienteDAO {
             try {
                 con.close();
 
-
-
             } catch (Exception e) {
                 System.out.println("Error al cerrar conexión ");
             }
@@ -53,11 +51,40 @@ public class ClienteDAO implements IClienteDAO {
 
     @Override
     public boolean buscarClientePorId(Cliente cliente) {
+
+        PreparedStatement ps;
+        ResultSet rs;
+
+        var con = getConexion();
+        var sql = "SELECT * FROM cliente WHERE id = ?";
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, cliente.getId());
+            rs = ps.executeQuery();
+            if (rs.next()) { // next Pregunta si tenemos un registro para leer
+                cliente.setNombre(rs.getString("nombre"));
+                cliente.setApellido(rs.getString("apellido"));
+                cliente.setDescuento(rs.getInt("descuento"));
+                return  true; // Quiere decir que si encontramos el registro
+            }
+
+
+        }catch (Exception e) {
+            System.out.println("Error al recuperar cliente por id: " +e.getMessage());
+        }
+        finally {
+            try {
+                con.close();
+            }catch (Exception e ){
+                System.out.println("Error al cerrar la conexión: " + e.getMessage());
+            }
+        }
+
         return false;
     }
 
     @Override
-    public boolean agregarCliente(Cliente cliente) {
+    public boolean  agregarCliente(Cliente cliente) {
         return false;
     }
 
@@ -72,12 +99,23 @@ public class ClienteDAO implements IClienteDAO {
     }
 
     static void main() {
-        // LISTAR CLIENTES
-        System.out.println("*** LISTAR CLIENTES ***");
-
         IClienteDAO clienteDao = new ClienteDAO();
+        // LISTAR CLIENTES
+        /*System.out.println("*** LISTAR CLIENTES ***");
+
+
         var clientes = clienteDao.listarClientes();
-        clientes.forEach(System.out::println);
+        clientes.forEach(System.out::println); // Imprime toda la base de datos*/
+
+        // BUSCAR POR ID
+        var cliente1 = new Cliente(6);
+        System.out.println("Cliente antes de la busqueda: " + cliente1);
+       var encontrado = clienteDao.buscarClientePorId(cliente1);
+        if (encontrado) {
+            System.out.println("Cliente encontrado "+ cliente1);
+        } else {
+            System.out.println("No se encontro cliente " + cliente1.getId());
+        }
 
 
     }
